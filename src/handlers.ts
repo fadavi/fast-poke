@@ -24,7 +24,6 @@ export async function getPokemonByName(
     : ((urlApiPokeman = urlApiPokeman + "?offset=20"),
       (urlApiPokeman = urlApiPokeman + "&limit=20"));
 
-
   // const keepAliveAgent = new http.Agent({ keepAlive: true });
 
   let response: any = "";
@@ -47,9 +46,7 @@ export async function getPokemonByName(
   return reply;
 }
 
-export const computeResponse = async (
-  response: unknown,
-) => {
+export async function computeResponse(response: unknown) {
   const resp = response as any;
 
   const types = resp.types
@@ -89,4 +86,4 @@ export const computeResponse = async (
       element.averageStat = 0;
     }
   });
-};
+}
