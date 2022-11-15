@@ -84,12 +84,12 @@ async function computeStatsAverage(_pokemon: Pokemon) {
   return pokemon;
 }
 
-export async function getPokemonByName(
+export async function getPokemonByNameOrID(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  const name: string = request.params["name"];
-  const pokemon: Pokemon | null = await pokeApi(`/api/v2/pokemon/${name}`);
+  const nameOrID: string = request.params["nameOrID"];
+  const pokemon: Pokemon | null = await pokeApi(`/api/v2/pokemon/${nameOrID}`);
 
   if (pokemon === null) {
     return reply.callNotFound();

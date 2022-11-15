@@ -1,13 +1,13 @@
 import { FastifyInstance } from 'fastify';
-import { getPokemonByName } from "./handlers";
+import { getPokemonByNameOrID } from "./handlers";
 
 export default async function router(fastify: FastifyInstance) {
-  fastify.get("/poke/:name", {
+  fastify.get("/poke/:nameOrID", {
     schema: {
       params: {
         type: "object",
         properties: {
-          name: {
+          nameOrID: {
             type: "string",
             minLength: 1,
             maxLength: 64,
@@ -16,5 +16,5 @@ export default async function router(fastify: FastifyInstance) {
         },
       },
     },
-  }, getPokemonByName);
+  }, getPokemonByNameOrID);
 }
