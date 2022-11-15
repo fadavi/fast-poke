@@ -47,7 +47,7 @@ export async function getPokemonByName(
     return reply.callNotFound();
   }
 
-  // mutates `response`:
+  // mutates `pokemon`:
   await computeStatsAverage(pokemon);
 
   reply.send(pokemon);
