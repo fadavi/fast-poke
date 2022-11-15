@@ -1,6 +1,15 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 // import { PokemonWithStats } from "models/PokemonWithStats";
 
+function equalsIgnoreCase(a: string, b: string) {
+  if (a == b) {
+    return true;
+  } else if (!a || !b) {
+    return !a === !b;
+  }
+  return String(a).toUpperCase() === String(b).toUpperCase();
+}
+
 async function pokeApi(
   absolutePath: string,
   options: Record<string, any> = {}
@@ -64,7 +73,7 @@ export async function computeResponse(pokemon: any) {
     const stats = [];
 
     for (const typeStat of allStats) {
-      if (typeStat.stat.name.toUpperCase() == pokemonStat.stat.name) {
+      if (equalsIgnoreCase(typeStat.stat.name, pokemonStat.stat.name)) {
         stats.push(typeStat.base_stat);
       }
     }
