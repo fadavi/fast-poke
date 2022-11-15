@@ -1,6 +1,24 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { Pokemon, PokemonStat, PokemonWithStatAverage } from "./models/Pokemon";
+import { IncomingMessage } from "http";
+import * as https from "https";
 import { Type } from "./models/Type";
+
+const aliveAgent = new https.Agent({
+  keepAlive: true,
+  maxSockets: 20,
+  maxFreeSockets: 5,
+});
+
+function httpError(
+  status: number = 500,
+  message: string = "",
+  cause: any = undefined
+) {
+  // @ts-ignore-next-line
+  const err = new Error(message, cause ? { cause } : {});
+  return Object.assign(err, { status });
+}
 
 function equalsIgnoreCase(a: string, b: string) {
   if (a == b) {
@@ -11,27 +29,47 @@ function equalsIgnoreCase(a: string, b: string) {
   return String(a).toUpperCase() === String(b).toUpperCase();
 }
 
-async function pokeApi(
+async function pokeApi<R>(
   absolutePath: string,
   options: Record<string, any> = {}
 ) {
-  // XXX: why not fetch API?!
-  // TODO: use https agent
-  // TODO: ... or improve error handling
-
   const url = new URL(absolutePath, "https://pokeapi.co");
   url.search = String(new URLSearchParams(options));
 
-  const res = await fetch(String(url), {
+  const requestOptions: https.RequestOptions = {
+    hostname: url.hostname,
+    path: url.pathname + url.search,
+    agent: aliveAgent,
     headers: { Accept: "application/json" },
+  };
+
+  return new Promise<R>((resolve, reject) => {
+    const chunks: string[] = [];
+
+    const onError = (err: any) => reject(httpError(503, "", err));
+
+    const onData = chunks.push.bind(chunks);
+
+    const onEnd = () => {
+      try {
+        resolve(JSON.parse(chunks.join("")));
+      } catch (err) {
+        reject(httpError(503, "", err));
+      }
+    };
+
+    const onResponse = (res: IncomingMessage) => {
+      // take anything other than 200 as 404!
+      if (res.statusCode !== 200) {
+        reject(httpError(404));
+        return res.resume();
+      }
+
+      res.setEncoding("utf8").on("data", onData).on("end", onEnd);
+    };
+
+    https.get(requestOptions, onResponse).on("error", onError);
   });
-
-  // TODO: improve error handling
-  if (res.status !== 200) {
-    return null;
-  }
-
-  return res.json();
 }
 
 /**
@@ -52,9 +90,9 @@ async function pokeApi(
 async function computeStatsAverage(_pokemon: Pokemon) {
   const pokemon = _pokemon as PokemonWithStatAverage;
 
-  const typeRequests: Promise<Type | null>[] = pokemon.types
+  const typeRequests: Promise<Type>[] = pokemon.types
     .map((t) => t.type.url)
-    .map((url) => pokeApi(url));
+    .map((url) => pokeApi<Type>(url).catch(() => null));
   const types = (await Promise.all(typeRequests)).filter(Boolean);
 
   const allStats = types.flatMap<PokemonStat>(
@@ -89,13 +127,20 @@ export async function getPokemonByNameOrID(
   reply: FastifyReply
 ) {
   const nameOrID: string = request.params["nameOrID"];
-  const pokemon: Pokemon | null = await pokeApi(`/api/v2/pokemon/${nameOrID}`);
 
-  if (pokemon === null) {
-    return reply.callNotFound();
+  try {
+    const pokemon: Pokemon = await pokeApi(`/api/v2/pokemon/${nameOrID}`);
+
+    // mutates `pokemon`:
+    const pokemonWithStatAverage = await computeStatsAverage(pokemon);
+    reply.send(pokemonWithStatAverage);
+  } catch (err) {
+    if (!err.status) {
+      return reply.send(httpError(500, "", err));
+    } else if (err.status === 503) {
+      reply.header("retry-after", 120);
+    }
+
+    return reply.send(err);
   }
-
-  // mutates `pokemon`:
-  const pokemonWithStatAverage = await computeStatsAverage(pokemon);
-  reply.send(pokemonWithStatAverage);
 }
