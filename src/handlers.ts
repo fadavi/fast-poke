@@ -11,18 +11,11 @@ export async function getPokemonByName(
   reply.headers["Accept"] = "application/json";
 
   let urlApiPokemon = "https://pokeapi.co/api/v2/pokemon/";
-
-  const params = {};
-
-  name == null
-    ? name.trim() != ""
-      ? ((params["name"] = name),
-        (urlApiPokemon = urlApiPokemon + "/"),
-        (urlApiPokemon = urlApiPokemon + name))
-      : ((urlApiPokemon = urlApiPokemon + "?offset=20"),
-        (urlApiPokemon = urlApiPokemon + "&limit=20"))
-    : ((urlApiPokemon = urlApiPokemon + "?offset=20"),
-      (urlApiPokemon = urlApiPokemon + "&limit=20"));
+  if (name?.trim?.()) {
+    urlApiPokemon += name;
+  } else {
+    urlApiPokemon += "?limit=20&offset=20";
+  }
 
   // const keepAliveAgent = new http.Agent({ keepAlive: true });
 
