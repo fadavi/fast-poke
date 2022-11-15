@@ -29,7 +29,7 @@ export async function getPokemonByName(
   );
 
   if (response == null) {
-    reply.code(404);
+    return reply.code(404);
   }
 
   computeResponse(response);
