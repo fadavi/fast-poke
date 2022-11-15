@@ -33,27 +33,7 @@ async function pokeApi(
   return res.json();
 }
 
-export async function getPokemonByName(
-  request: FastifyRequest,
-  reply: FastifyReply
-) {
-  // TODO: validate/sanitize param(s)
-  const name: string = request.params["name"];
-
-  // let's suppose the `name` param is valid
-  const pokemon: any = await pokeApi(`/api/v2/pokemon/${name}`);
-
-  if (pokemon == null) {
-    return reply.callNotFound();
-  }
-
-  // mutates `pokemon`:
-  await computeStatsAverage(pokemon);
-
-  reply.send(pokemon);
-}
-
-export async function computeStatsAverage(pokemon: any) {
+async function computeStatsAverage(pokemon: any) {
   const typeRequests = pokemon.types.map((t) => pokeApi(t.type.url));
   // TODO: handle nil (404) responses
   const types = await Promise.all(typeRequests);
@@ -82,4 +62,24 @@ export async function computeStatsAverage(pokemon: any) {
       pokemonStat.averageStat = avg;
     }
   }
+}
+
+export async function getPokemonByName(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  // TODO: validate/sanitize param(s)
+  const name: string = request.params["name"];
+
+  // let's suppose the `name` param is valid
+  const pokemon: any = await pokeApi(`/api/v2/pokemon/${name}`);
+
+  if (pokemon == null) {
+    return reply.callNotFound();
+  }
+
+  // mutates `pokemon`:
+  await computeStatsAverage(pokemon);
+
+  reply.send(pokemon);
 }
