@@ -8,8 +8,6 @@ export async function getPokemonByName(
 ) {
   const name: string = request.params["name"];
 
-  reply.headers["Accept"] = "application/json";
-
   let urlApiPokemon = "https://pokeapi.co/api/v2/pokemon/";
   if (name?.trim?.()) {
     urlApiPokemon += name;
@@ -22,7 +20,11 @@ export async function getPokemonByName(
   let response: any = "";
 
   http.request(
-    { ...reply.headers, ...{ hostname: urlApiPokemon, port: 80 } },
+    {
+      hostname: urlApiPokemon,
+      port: 80,
+      headers: { Accept: "application/json" },
+    },
     (result) => {
       response = result;
     }
