@@ -38,8 +38,8 @@ export async function getPokemonByName(
     return reply.callNotFound();
   }
 
-  // TEMP: for now, do not compute! :)
-  // computeResponse(response);
+  // mutates `response`:
+  await computeResponse(response);
 
   reply.send(response);
 }
@@ -56,7 +56,8 @@ export async function computeResponse(pokemon: any) {
     const stats = [];
 
     for (const type of types) {
-      for (const typeStat of type.stats) {
+      // HEADS UP: "Type" model hasn't got `stats` property: https://pokeapi.co/docs/v2#types
+      for (const typeStat of (type as any).stats) {
         if (typeStat.stat.name.toUpperCase() == pokemonStat.stat.name) {
           stats.push(typeStat.base_stat);
         }
