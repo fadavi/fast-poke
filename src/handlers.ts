@@ -4,14 +4,14 @@ import * as http from "http";
 
 async function pokeApi(
   absolutePath: string,
-  options: Record<string, any> = {},
+  options: Record<string, any> = {}
 ) {
   // XXX: why not fetch API?!
   // TODO: use https agent
   // TODO: ... or improve error handling
 
   const url = new URL(absolutePath, "https://pokeapi.co");
-  url.search = String(new URLSearchParams(options))
+  url.search = String(new URLSearchParams(options));
 
   const res = await fetch(String(url), {
     headers: { Accept: "application/json" },
@@ -19,10 +19,10 @@ async function pokeApi(
 
   // TODO: improve error handling
   if (res.status !== 200) {
-    return null
+    return null;
   }
 
-  return res.json()
+  return res.json();
 }
 
 export async function getPokemonByName(
@@ -33,7 +33,7 @@ export async function getPokemonByName(
   const name: string = request.params["name"];
 
   // let's suppose the `name` param is valid
-  const response: any = await pokeApi(`/api/v2/pokemon/${name}`)
+  const response: any = await pokeApi(`/api/v2/pokemon/${name}`);
 
   if (response == null) {
     return reply.callNotFound();
@@ -46,7 +46,7 @@ export async function getPokemonByName(
 }
 
 export async function computeResponse(resp: any) {
-  const requests = resp.types.map(t => pokeApi(t.type.url));
+  const requests = resp.types.map((t) => pokeApi(t.type.url));
   const pokemonTypes = await Promise.all(requests);
 
   if (pokemonTypes == undefined) throw pokemonTypes;
