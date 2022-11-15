@@ -37,8 +37,6 @@ export async function getPokemonByName(
   computeResponse(response);
 
   reply.send(response);
-
-  return reply;
 }
 
 export async function computeResponse(response: unknown) {
