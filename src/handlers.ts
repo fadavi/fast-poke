@@ -45,9 +45,7 @@ export async function getPokemonByName(
   reply.send(response);
 }
 
-export async function computeResponse(response: unknown) {
-  const resp = response as any;
-
+export async function computeResponse(resp: any) {
   const types = resp.types
     .map((type) => type.type)
     .map((type) => {
