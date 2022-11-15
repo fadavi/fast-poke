@@ -5,8 +5,8 @@ import { Type } from "./models/Type";
 function equalsIgnoreCase(a: string, b: string) {
   if (a == b) {
     return true;
-  } else if (!a || !b) {
-    return !a === !b;
+  } else if (a == null || b == null) {
+    return a == b;
   }
   return String(a).toUpperCase() === String(b).toUpperCase();
 }
@@ -39,7 +39,7 @@ async function computeStatsAverage(_pokemon: Pokemon) {
 
   const typeRequests: Promise<Type | null>[] = pokemon.types
     .map((t) => t.type.url)
-    .map((url) => pokeApi(url))
+    .map((url) => pokeApi(url));
   const types = (await Promise.all(typeRequests)).filter(Boolean);
 
   // use `reduce` since `flatMap` is not accessible according to the tsconfig
