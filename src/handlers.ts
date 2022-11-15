@@ -1,6 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 // import { PokemonWithStats } from "models/PokemonWithStats";
-import * as http from "http";
 
 async function pokeApi(
   absolutePath: string,
@@ -45,28 +44,28 @@ export async function getPokemonByName(
   reply.send(response);
 }
 
-export async function computeResponse(resp: any) {
-  const requests = resp.types.map((t) => pokeApi(t.type.url));
-  const pokemonTypes = await Promise.all(requests);
+export async function computeResponse(pokemon: any) {
+  const typeRequests = pokemon.types.map((t) => pokeApi(t.type.url));
+  const types = await Promise.all(typeRequests);
 
-  if (pokemonTypes == undefined) throw pokemonTypes;
+  if (types == undefined) throw types;
 
-  resp.stats.forEach((element) => {
+  pokemon.stats.forEach((pokemonStat) => {
     const stats = [];
 
-    pokemonTypes.map((pok) =>
-      pok.stats.map((st) =>
-        st.stat.name.toUpperCase() == element.stat.name
-          ? stats.push(st.base_state)
+    types.map((type) =>
+      type.stats.map((typeStat) =>
+        typeStat.stat.name.toUpperCase() == pokemonStat.stat.name
+          ? stats.push(typeStat.base_state)
           : []
       )
     );
 
-    if (stats) {
+    if (stats.length) {
       const avg = stats.reduce((a, b) => a + b) / stats.length;
-      element.averageStat = avg;
+      pokemonStat.averageStat = avg;
     } else {
-      element.averageStat = 0;
+      pokemonStat.averageStat = 0;
     }
   });
 }
