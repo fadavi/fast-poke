@@ -1,6 +1,4 @@
-import { StringifyOptions } from "querystring";
-
-export type Species = {
+export interface Species {
   name: string;
   url: string;
-};
+}
