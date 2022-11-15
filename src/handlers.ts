@@ -1,5 +1,4 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-// import { PokemonWithStats } from "models/PokemonWithStats";
 
 function equalsIgnoreCase(a: string, b: string) {
   if (a == b) {
