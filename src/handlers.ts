@@ -32,16 +32,8 @@ export async function getPokemonByName(
   // TODO: validate/sanitize param(s)
   const name: string = request.params["name"];
 
-  let response: any = null
-
-  if (name?.trim?.()) {
-    response = await pokeApi(`/api/v2/pokemon/${name}`)
-  } else {
-    // TEMP: for now, let's suppose this one is not possible!
-    return reply.callNotFound();
-
-    // urlApiPokemon += "?limit=20&offset=20";
-  }
+  // let's suppose the `name` param is valid
+  const response: any = await pokeApi(`/api/v2/pokemon/${name}`)
 
   if (response == null) {
     return reply.callNotFound();
