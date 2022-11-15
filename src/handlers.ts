@@ -55,9 +55,8 @@ export async function getPokemonByName(
 
 export async function computeResponse(pokemon: any) {
   const typeRequests = pokemon.types.map((t) => pokeApi(t.type.url));
+  // TODO: handle nil (404) responses
   const types = await Promise.all(typeRequests);
-
-  if (types == undefined) throw types;
 
   // use `reduce` since `flatMap` is not accessible according to the tsconfig
   const allStats = types.reduce<any[]>((allStats, type: any) => {
