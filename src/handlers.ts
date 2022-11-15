@@ -57,14 +57,12 @@ async function computeStatsAverage(_pokemon: Pokemon) {
     .map((url) => pokeApi(url));
   const types = (await Promise.all(typeRequests)).filter(Boolean);
 
-  // use `reduce` since `flatMap` is not accessible according to the tsconfig
-  const allStats = types.reduce<PokemonStat[]>((allStats, type) => {
+  const allStats = types.flatMap<PokemonStat>(
     /* HEADS UP: "Type" model hasn't got `stats` property:
      * https://pokeapi.co/docs/v2#types
-     * Because of this, the result is always ZERO. */
-    allStats.push(...((type as any).stats ?? []));
-    return allStats;
-  }, []);
+     * Because of this, the result is always ZERO! */
+    (type) => (type as Pokemon).stats ?? []
+  );
 
   for (const pokemonStat of pokemon.stats) {
     pokemonStat.averageStat = 0;
