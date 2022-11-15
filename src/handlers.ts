@@ -1,4 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
+import { Pokemon, PokemonStat, PokemonWithStatAverage } from "./models/Pokemon";
+import { Type } from "./models/Type";
 
 function equalsIgnoreCase(a: string, b: string) {
   if (a == b) {
@@ -32,16 +34,19 @@ async function pokeApi(
   return res.json();
 }
 
-async function computeStatsAverage(pokemon: any) {
-  const typeRequests = pokemon.types.map((t) => pokeApi(t.type.url));
-  // TODO: handle nil (404) responses
-  const types = await Promise.all(typeRequests);
+async function computeStatsAverage(_pokemon: Pokemon) {
+  const pokemon = _pokemon as PokemonWithStatAverage;
+
+  const typeRequests: Promise<Type | null>[] = pokemon.types
+    .map((t) => t.type.url)
+    .map((url) => pokeApi(url))
+  const types = (await Promise.all(typeRequests)).filter(Boolean);
 
   // use `reduce` since `flatMap` is not accessible according to the tsconfig
-  const allStats = types.reduce<any[]>((allStats, type: any) => {
+  const allStats = types.reduce<PokemonStat[]>((allStats, type) => {
     /* HEADS UP: "Type" model hasn't got `stats` property:
      * https://pokeapi.co/docs/v2#types */
-    allStats.push(...(type.stats ?? []));
+    allStats.push(...((type as any).stats ?? []));
     return allStats;
   }, []);
 
@@ -71,9 +76,9 @@ export async function getPokemonByName(
   const name: string = request.params["name"];
 
   // let's suppose the `name` param is valid
-  const pokemon: any = await pokeApi(`/api/v2/pokemon/${name}`);
+  const pokemon: Pokemon | null = await pokeApi(`/api/v2/pokemon/${name}`);
 
-  if (pokemon == null) {
+  if (pokemon === null) {
     return reply.callNotFound();
   }
 

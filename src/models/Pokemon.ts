@@ -18,3 +18,11 @@ export interface Pokemon {
   stats: PokemonStat[];
   types: PokemonType[];
 }
+
+export interface PokemonStatWithAverage extends PokemonStat {
+  averageStat?: number; // average_stat IMHO
+}
+
+export interface PokemonWithStatAverage extends Pokemon {
+  stats: PokemonStatWithAverage[];
+}
