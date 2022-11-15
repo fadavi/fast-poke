@@ -32,16 +32,16 @@ export async function getPokemonByName(
   const name: string = request.params["name"];
 
   // let's suppose the `name` param is valid
-  const response: any = await pokeApi(`/api/v2/pokemon/${name}`);
+  const pokemon: any = await pokeApi(`/api/v2/pokemon/${name}`);
 
-  if (response == null) {
+  if (pokemon == null) {
     return reply.callNotFound();
   }
 
   // mutates `response`:
-  await computeResponse(response);
+  await computeResponse(pokemon);
 
-  reply.send(response);
+  reply.send(pokemon);
 }
 
 export async function computeResponse(pokemon: any) {
