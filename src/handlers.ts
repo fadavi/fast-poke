@@ -48,12 +48,12 @@ export async function getPokemonByName(
   }
 
   // mutates `response`:
-  await computeResponse(pokemon);
+  await computeStatsAverage(pokemon);
 
   reply.send(pokemon);
 }
 
-export async function computeResponse(pokemon: any) {
+export async function computeStatsAverage(pokemon: any) {
   const typeRequests = pokemon.types.map((t) => pokeApi(t.type.url));
   // TODO: handle nil (404) responses
   const types = await Promise.all(typeRequests);
