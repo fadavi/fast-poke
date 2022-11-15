@@ -50,17 +50,22 @@ export async function computeResponse(pokemon: any) {
 
   if (types == undefined) throw types;
 
+  // use `reduce` since `flatMap` is not accessible according to the tsconfig
+  const allStats = types.reduce<any[]>((allStats, type: any) => {
+    /* HEADS UP: "Type" model hasn't got `stats` property:
+     * https://pokeapi.co/docs/v2#types */
+    allStats.push(...(type.stats ?? []));
+    return allStats;
+  }, []);
+
   for (const pokemonStat of pokemon.stats) {
     pokemonStat.averageStat = 0;
 
     const stats = [];
 
-    for (const type of types) {
-      // HEADS UP: "Type" model hasn't got `stats` property: https://pokeapi.co/docs/v2#types
-      for (const typeStat of (type as any).stats) {
-        if (typeStat.stat.name.toUpperCase() == pokemonStat.stat.name) {
-          stats.push(typeStat.base_stat);
-        }
+    for (const typeStat of allStats) {
+      if (typeStat.stat.name.toUpperCase() == pokemonStat.stat.name) {
+        stats.push(typeStat.base_stat);
       }
     }
 
