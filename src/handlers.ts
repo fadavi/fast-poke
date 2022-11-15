@@ -46,16 +46,10 @@ export async function getPokemonByName(
 }
 
 export async function computeResponse(resp: any) {
-  const types = resp.types
-    .map((type) => type.type)
-    .map((type) => {
-      return type.url;
-    })
-    .reduce((types, typeUrl) => types.push(typeUrl));
-
+  const typeUrls = resp.types.map(t => t.type.url)
   const pokemonTypes = [];
 
-  types.forEach((element) => {
+  typeUrls.forEach((element) => {
     // const keepAliveAgent = new http.Agent({ keepAlive: true });
 
     http.request({ hostname: element }, (response) =>
