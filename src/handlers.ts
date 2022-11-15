@@ -1,32 +1,33 @@
-import { FastifyRequest, FastifyReply } from "fastify";
-import { PokemonWithStats } from "models/PokemonWithStats";
+import { FastifyRequest, FastifyReply } from 'fastify';
+// import { PokemonWithStats } from 'models/PokemonWithStats';
+import * as http from 'http';
 
 export async function getPokemonByName(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  var name: string = request.params["name"];
+  const name: string = request.params['name'];
 
-  reply.headers["Accept"] = "application/json";
+  reply.headers['Accept'] = 'application/json';
 
-  var urlApiPokeman = `https://pokeapi.co/api/v2/pokemon/`;
+  let urlApiPokeman = `https://pokeapi.co/api/v2/pokemon/`;
 
-  var params = {};
+  const params = {};
 
   name == null
-    ? name.trim() != ""
-      ? ((params["name"] = name),
-        (urlApiPokeman = urlApiPokeman + "/"),
+    ? name.trim() != ''
+      ? ((params['name'] = name),
+        (urlApiPokeman = urlApiPokeman + '/'),
         (urlApiPokeman = urlApiPokeman + name))
-      : ((urlApiPokeman = urlApiPokeman + '"?offset=20"'),
-        (urlApiPokeman = urlApiPokeman + "&limit=20"))
-    : ((urlApiPokeman = urlApiPokeman + '"?offset=20"'),
-      (urlApiPokeman = urlApiPokeman + "&limit=20"));
+      : ((urlApiPokeman = urlApiPokeman + '?offset=20'),
+        (urlApiPokeman = urlApiPokeman + '&limit=20'))
+    : ((urlApiPokeman = urlApiPokeman + '?offset=20'),
+      (urlApiPokeman = urlApiPokeman + '&limit=20'));
 
-  const http = require("http");
-  const keepAliveAgent = new http.Agent({ keepAlive: true });
 
-  let response: any = "";
+  // const keepAliveAgent = new http.Agent({ keepAlive: true });
+
+  let response: any = '';
 
   http.request(
     { ...reply.headers, ...{ hostname: urlApiPokeman, port: 80 } },
@@ -39,7 +40,7 @@ export async function getPokemonByName(
     reply.code(404);
   }
 
-  computeResponse(response, reply);
+  computeResponse(response);
 
   reply.send(response);
 
@@ -48,22 +49,20 @@ export async function getPokemonByName(
 
 export const computeResponse = async (
   response: unknown,
-  reply: FastifyReply
 ) => {
   const resp = response as any;
 
-  let types = resp.types
+  const types = resp.types
     .map((type) => type.type)
     .map((type) => {
       return type.url;
     })
     .reduce((types, typeUrl) => types.push(typeUrl));
 
-  let pokemonTypes = [];
+  const pokemonTypes = [];
 
   types.forEach((element) => {
-    const http = require("http");
-    const keepAliveAgent = new http.Agent({ keepAlive: true });
+    // const keepAliveAgent = new http.Agent({ keepAlive: true });
 
     http.request({ hostname: element }, (response) =>
       pokemonTypes.push(response)
@@ -73,7 +72,7 @@ export const computeResponse = async (
   if (pokemonTypes == undefined) throw pokemonTypes;
 
   resp.stats.forEach((element) => {
-    var stats = [];
+    const stats = [];
 
     pokemonTypes.map((pok) =>
       pok.stats.map((st) =>
@@ -84,7 +83,7 @@ export const computeResponse = async (
     );
 
     if (stats) {
-      let avg = stats.reduce((a, b) => a + b) / stats.length;
+      const avg = stats.reduce((a, b) => a + b) / stats.length;
       element.averageStat = avg;
     } else {
       element.averageStat = 0;
