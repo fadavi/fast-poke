@@ -1,33 +1,33 @@
-import { FastifyRequest, FastifyReply } from 'fastify';
-// import { PokemonWithStats } from 'models/PokemonWithStats';
-import * as http from 'http';
+import { FastifyRequest, FastifyReply } from "fastify";
+// import { PokemonWithStats } from "models/PokemonWithStats";
+import * as http from "http";
 
 export async function getPokemonByName(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  const name: string = request.params['name'];
+  const name: string = request.params["name"];
 
-  reply.headers['Accept'] = 'application/json';
+  reply.headers["Accept"] = "application/json";
 
-  let urlApiPokeman = `https://pokeapi.co/api/v2/pokemon/`;
+  let urlApiPokeman = "https://pokeapi.co/api/v2/pokemon/";
 
   const params = {};
 
   name == null
-    ? name.trim() != ''
-      ? ((params['name'] = name),
-        (urlApiPokeman = urlApiPokeman + '/'),
+    ? name.trim() != ""
+      ? ((params["name"] = name),
+        (urlApiPokeman = urlApiPokeman + "/"),
         (urlApiPokeman = urlApiPokeman + name))
-      : ((urlApiPokeman = urlApiPokeman + '?offset=20'),
-        (urlApiPokeman = urlApiPokeman + '&limit=20'))
-    : ((urlApiPokeman = urlApiPokeman + '?offset=20'),
-      (urlApiPokeman = urlApiPokeman + '&limit=20'));
+      : ((urlApiPokeman = urlApiPokeman + "?offset=20"),
+        (urlApiPokeman = urlApiPokeman + "&limit=20"))
+    : ((urlApiPokeman = urlApiPokeman + "?offset=20"),
+      (urlApiPokeman = urlApiPokeman + "&limit=20"));
 
 
   // const keepAliveAgent = new http.Agent({ keepAlive: true });
 
-  let response: any = '';
+  let response: any = "";
 
   http.request(
     { ...reply.headers, ...{ hostname: urlApiPokeman, port: 80 } },
