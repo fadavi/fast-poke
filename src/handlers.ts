@@ -15,8 +15,8 @@ export async function getPokemonByName(
     urlApiPokemon += "?limit=20&offset=20";
 
     // TEMP: for now, let's suppose this one is not possible!
-    return reply.status(404);
   }
+    return reply.callNotFound();
 
   // const keepAliveAgent = new http.Agent({ keepAlive: true });
 
@@ -34,7 +34,7 @@ export async function getPokemonByName(
   );
 
   if (response == null) {
-    return reply.code(404);
+    return reply.callNotFound();
   }
 
   computeResponse(response);
