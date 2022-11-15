@@ -66,6 +66,8 @@ async function computeStatsAverage(_pokemon: Pokemon) {
       pokemonStat.averageStat = avg;
     }
   }
+
+  return pokemon;
 }
 
 export async function getPokemonByName(
@@ -83,7 +85,6 @@ export async function getPokemonByName(
   }
 
   // mutates `pokemon`:
-  await computeStatsAverage(pokemon);
-
-  reply.send(pokemon);
+  const pokemonWithStatAverage = await computeStatsAverage(pokemon);
+  reply.send(pokemonWithStatAverage);
 }
