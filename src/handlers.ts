@@ -34,6 +34,21 @@ async function pokeApi(
   return res.json();
 }
 
+/**
+ * Calculates average of base stat for each stat of the `pokemon`.
+ * But, according to PokeApi docs, `Type` model hasn't got a `stat` property.
+ * So, I decided to change the spec. These PokeApi models are somehow related to
+ * `stats` or `stat`:
+ * 1. Evolution Chain
+ * 2. Move
+ * 3. Characteristic[?]
+ * 4. Nature
+ * 5. Pokeathlon Stat
+ * 6. Pokemon
+ * Beside that, among the models, the `base_stat` only exists in `Pokemon`. It's
+ * my bet that the best option is to calculate the average stat among all
+ * pokemons having a particular stat.
+ */
 async function computeStatsAverage(_pokemon: Pokemon) {
   const pokemon = _pokemon as PokemonWithStatAverage;
 
@@ -45,7 +60,8 @@ async function computeStatsAverage(_pokemon: Pokemon) {
   // use `reduce` since `flatMap` is not accessible according to the tsconfig
   const allStats = types.reduce<PokemonStat[]>((allStats, type) => {
     /* HEADS UP: "Type" model hasn't got `stats` property:
-     * https://pokeapi.co/docs/v2#types */
+     * https://pokeapi.co/docs/v2#types
+     * Because of this, the result is always ZERO. */
     allStats.push(...((type as any).stats ?? []));
     return allStats;
   }, []);
