@@ -2,42 +2,53 @@ import { FastifyRequest, FastifyReply } from "fastify";
 // import { PokemonWithStats } from "models/PokemonWithStats";
 import * as http from "http";
 
+async function pokeApi(
+  absolutePath: string,
+  options: Record<string, any> = {},
+) {
+  // XXX: why not fetch API?!
+  // TODO: use https agent
+  // TODO: ... or improve error handling
+
+  const url = new URL(absolutePath, "https://pokeapi.co");
+  url.search = String(new URLSearchParams(options))
+
+  const res = await fetch(String(url), {
+    headers: { Accept: "application/json" },
+  });
+
+  // TODO: improve error handling
+  if (res.status !== 200) {
+    return null
+  }
+
+  return res.json()
+}
+
 export async function getPokemonByName(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
+  // TODO: validate/sanitize param(s)
   const name: string = request.params["name"];
 
-  let urlApiPokemon = "https://pokeapi.co/api/v2/pokemon/";
-  if (name?.trim?.()) {
-    urlApiPokemon += name;
-  } else {
-    urlApiPokemon += "?limit=20&offset=20";
+  let response: any = null
 
+  if (name?.trim?.()) {
+    response = await pokeApi(`/api/v2/pokemon/${name}`)
+  } else {
     // TEMP: for now, let's suppose this one is not possible!
-  }
     return reply.callNotFound();
 
-  // const keepAliveAgent = new http.Agent({ keepAlive: true });
-
-  let response: any = "";
-
-  http.request(
-    {
-      hostname: urlApiPokemon,
-      port: 80,
-      headers: { Accept: "application/json" },
-    },
-    (result) => {
-      response = result;
-    }
-  );
+    // urlApiPokemon += "?limit=20&offset=20";
+  }
 
   if (response == null) {
     return reply.callNotFound();
   }
 
-  computeResponse(response);
+  // TEMP: for now, do not compute! :)
+  // computeResponse(response);
 
   reply.send(response);
 }
