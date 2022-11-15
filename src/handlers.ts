@@ -88,10 +88,7 @@ export async function getPokemonByName(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  // TODO: validate/sanitize param(s)
   const name: string = request.params["name"];
-
-  // let's suppose the `name` param is valid
   const pokemon: Pokemon | null = await pokeApi(`/api/v2/pokemon/${name}`);
 
   if (pokemon === null) {
