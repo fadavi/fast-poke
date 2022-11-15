@@ -52,7 +52,7 @@ export const computeResponse = async (response: unknown, reply: FastifyReply) =>
   if (pokemonTypes == undefined)
     throw pokemonTypes
 
-  response.stats.forEach(element => {
+  resp.stats.forEach(element => {
     var stats = []
 
     pokemonTypes.map(pok =>
