@@ -51,6 +51,8 @@ export async function computeResponse(pokemon: any) {
   if (types == undefined) throw types;
 
   for (const pokemonStat of pokemon.stats) {
+    pokemonStat.averageStat = 0;
+
     const stats = [];
 
     for (const type of types) {
@@ -64,8 +66,6 @@ export async function computeResponse(pokemon: any) {
     if (stats.length) {
       const avg = stats.reduce((a, b) => a + b) / stats.length;
       pokemonStat.averageStat = avg;
-    } else {
-      pokemonStat.averageStat = 0;
     }
   }
 }
