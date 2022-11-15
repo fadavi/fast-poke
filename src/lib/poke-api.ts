@@ -9,6 +9,8 @@ import {
   PokemonWithStatAverage,
 } from "../models/Pokemon";
 
+const APPLICATION_JSON = "application/json";
+
 const aliveAgent = new https.Agent({
   keepAlive: true,
   maxSockets: 20,
@@ -26,7 +28,7 @@ export async function pokeApi<R>(
     hostname: url.hostname,
     path: url.pathname + url.search,
     agent: aliveAgent,
-    headers: { Accept: "application/json" },
+    headers: { Accept: APPLICATION_JSON },
   };
 
   return new Promise<R>((resolve, reject) => {
@@ -45,9 +47,11 @@ export async function pokeApi<R>(
     };
 
     const onResponse = (res: IncomingMessage) => {
-      // take anything other than 200 as 404!
-      if (res.statusCode !== 200) {
-        reject(httpError(404));
+      const isJSON = res.headers["content-type"]?.includes?.(APPLICATION_JSON);
+      const isSuccessful = [200, 201].includes(res.statusCode);
+
+      if (!isJSON || !isSuccessful) {
+        reject(httpError(res.statusCode === 404 ? 404 : 503));
         return res.resume();
       }
 
