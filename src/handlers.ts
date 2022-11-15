@@ -13,6 +13,9 @@ export async function getPokemonByName(
     urlApiPokemon += name;
   } else {
     urlApiPokemon += "?limit=20&offset=20";
+
+    // TEMP: for now, let's suppose this one is not possible!
+    return reply.status(404);
   }
 
   // const keepAliveAgent = new http.Agent({ keepAlive: true });
