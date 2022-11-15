@@ -50,16 +50,16 @@ export async function computeResponse(pokemon: any) {
 
   if (types == undefined) throw types;
 
-  pokemon.stats.forEach((pokemonStat) => {
+  for (const pokemonStat of pokemon.stats) {
     const stats = [];
 
-    types.map((type) =>
-      type.stats.map((typeStat) =>
-        typeStat.stat.name.toUpperCase() == pokemonStat.stat.name
-          ? stats.push(typeStat.base_state)
-          : []
-      )
-    );
+    for (const type of types) {
+      for (const typeStat of type.stats) {
+        if (typeStat.stat.name.toUpperCase() == pokemonStat.stat.name) {
+          stats.push(typeStat.base_stat);
+        }
+      }
+    }
 
     if (stats.length) {
       const avg = stats.reduce((a, b) => a + b) / stats.length;
@@ -67,5 +67,5 @@ export async function computeResponse(pokemon: any) {
     } else {
       pokemonStat.averageStat = 0;
     }
-  });
+  }
 }
