@@ -1,33 +1,3 @@
-# Fastify & Typescript App
-
-## Description
-
-Fastify & TypeScript starter repository.
-
-## Installation
-
-```bash
-$ git clone https://github.com/Matschik/fastify-typescript-starter.git
-$ cd fastify-typescript-starter
-$ npm install
-$ rm -rf .git # Remove repository's git directory
-```
-
-## Usage
-
-```bash
-# development: hot reload with nodemon
-$ npm run dev
-
-# debug
-$ npm run debug
-
-# format with prettier
-$ npm run format
-
-# build for production
-$ npm run build
-
-# production
-$ npm run prod
-```
+# Fast Poke
+- According to the PokeAPI documentation, as the `Type` model does not contain a `stats` property, the calculated `averageStat` will be always zero. In my opinion, it makes sense to calculate the average among all of existing pokemons.
+- I tried to do not install any npm package.
