@@ -10,7 +10,11 @@ describe("poke-api", () => {
       try {
         await pokeApi("/api/v2/pokemon/some_truly_impossible_pokemon_name");
       } catch (err) {
-        assert.strictEqual(err.status, 404, `Unexpected error status: ${err.status}`);
+        assert.strictEqual(
+          err.status,
+          404,
+          `Unexpected error status: ${err.status}`
+        );
         return;
       }
 
@@ -35,7 +39,7 @@ describe("poke-api", () => {
   describe("computeStatsAverage", () => {
     let pokemon: Pokemon;
 
-    beforeEach(async () => pokemon = await pokeApi("/api/v2/pokemon/1"));
+    beforeEach(async () => (pokemon = await pokeApi("/api/v2/pokemon/1")));
 
     it("adds averageStat to stat objects of the pokemon", async () => {
       const result = await computeStatsAverage(pokemon);
@@ -44,6 +48,6 @@ describe("poke-api", () => {
       for (const stat of result.stats) {
         assert.strictEqual(typeof stat.averageStat, "number");
       }
-    })
+    });
   });
-})
+});
