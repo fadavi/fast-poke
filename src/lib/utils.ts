@@ -14,5 +14,13 @@ export function equalsIgnoreCase(a: string, b: string) {
   } else if (a == null || b == null) {
     return a == b;
   }
-  return String(a).toUpperCase() === String(b).toUpperCase();
+
+  const strA = String(a),
+    strB = String(b);
+
+  if (strA === strB) {
+    return true;
+  }
+
+  return strA.toUpperCase() === strB.toUpperCase();
 }
