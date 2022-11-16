@@ -7,7 +7,7 @@
     "debug": "nodemon --config nodemon-debug.json",
     "format": "prettier --write \"src/**/*.ts\"",
     "prod": "cross-env NODE_ENV=production node dist/server.js",
-    "test": "node --require ts-node/register --test src/lib/utils.spec.ts"
+    "test": "node --require ts-node/register --test src/lib/utils.spec.ts src/lib/poke-api.spec.ts"
   },
   "dependencies": {
     "fastify": "^3.1.1"
