@@ -19,10 +19,10 @@ export async function getPokemonByNameOrID(
   } catch (err) {
     if (!err.status) {
       return reply.send(httpError(500, "", err));
-    } else if (err.status === 503) {
-      reply.header("retry-after", 120);
+    } else if (err.status === 404) {
+      return reply.send(httpError(404, "", err));
     }
 
-    return reply.send(err);
+    return reply.header("retry-after", 120).send(httpError(503, "", err));
   }
 }

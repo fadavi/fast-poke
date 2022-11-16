@@ -42,7 +42,7 @@ export async function pokeApi<R>(
       try {
         resolve(JSON.parse(chunks.join("")));
       } catch (err) {
-        reject(httpError(503, "", err));
+        reject(httpError(500, "Invalid Response Payload", err));
       }
     };
 
@@ -51,7 +51,7 @@ export async function pokeApi<R>(
       const isSuccessful = [200, 201].includes(res.statusCode);
 
       if (!isJSON || !isSuccessful) {
-        reject(httpError(res.statusCode === 404 ? 404 : 503));
+        reject(httpError(res.statusCode));
         return res.resume();
       }
 
