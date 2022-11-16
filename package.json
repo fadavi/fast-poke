@@ -1,6 +1,9 @@
 {
   "name": "fast-poke",
   "version": "0.1.0-SNAPSHOT",
+  "engines": {
+    "node": "^16.x || ^18.x || ^19.x"
+  },
   "scripts": {
     "start": "npm run dev",
     "dev": "cross-env NODE_ENV=development nodemon",
